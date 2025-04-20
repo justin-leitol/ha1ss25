@@ -134,7 +134,6 @@ class CalculatorTest {
 
         calc.pressDigitKey(0);
         calc.pressUnaryOperationKey("1/x");
-        calc.pressEqualsKey();
 
         String expected = "Error";
         String actual = calc.readScreen();

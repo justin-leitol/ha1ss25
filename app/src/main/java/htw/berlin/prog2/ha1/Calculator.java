@@ -96,6 +96,12 @@ public class Calculator {
         lastPressClear = false;
         latestValue = Double.parseDouble(screen);
         latestOperation = operation;
+        // Bugfix: Abfangen von Negativem Inversem von 0
+        if (operation.equals("1/x") && Double.parseDouble(screen) == 0) {
+            screen = "Error";
+            return;
+        };
+
         var result = switch(operation) {
             case "√" -> Math.sqrt(Double.parseDouble(screen));
             case "%" -> Double.parseDouble(screen) / 100;
