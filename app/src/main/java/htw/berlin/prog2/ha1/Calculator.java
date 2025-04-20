@@ -13,6 +13,10 @@ public class Calculator {
     private double latestValue;
 
     private String latestOperation = "";
+    /**
+     * Variable um festzustellen ob der letzt gedrückte Button Clear war
+     */
+    private boolean lastPressClear = false;
 
     /**
      * @return den aktuellen Bildschirminhalt als String
@@ -29,6 +33,8 @@ public class Calculator {
      * @param digit Die Ziffer, deren Taste gedrückt wurde
      */
     public void pressDigitKey(int digit) {
+        lastPressClear = false;
+        //BUGFIX entfernen von: latestValue = Double.parseDouble(this.screen); Unnötig da der Screen nur dann im latestValue gespeichert werden sollte wenn gerechnet wird
         if(digit > 9 || digit < 0) throw new IllegalArgumentException();
 
         if(screen.equals("0") || latestValue == Double.parseDouble(screen)) screen = "";
@@ -43,11 +49,25 @@ public class Calculator {
      * Wird daraufhin noch einmal die Taste gedrückt, dann werden auch zwischengespeicherte
      * Werte sowie der aktuelle Operationsmodus zurückgesetzt, so dass der Rechner wieder
      * im Ursprungszustand ist.
+     *BUGFIX: Neue Variable im Calc Objekt angelegt um zu überprüfen
+     * ob die letzte gedrückte "Taste" CLEAR war.
+     * Wenn ja wird alles gelöscht
+     * Wenn nicht dann wird nur der Screen gecleared und die Variable auf True gesetzt
+     * Wenn eine andere "Taste" gedrückt wird, wird die Variable lastPressClear wieder auf false gesetzt.
+     *
      */
     public void pressClearKey() {
-        screen = "0";
-        latestOperation = "";
-        latestValue = 0.0;
+        if (!lastPressClear){
+            screen = "0";
+            lastPressClear = true;
+        } else {
+            screen = "0";
+            latestOperation = "";
+            latestValue = 0.0;
+            lastPressClear = false;
+        }
+
+
     }
 
     /**
@@ -60,6 +80,7 @@ public class Calculator {
      * @param operation "+" für Addition, "-" für Substraktion, "x" für Multiplikation, "/" für Division
      */
     public void pressBinaryOperationKey(String operation)  {
+        lastPressClear = false;
         latestValue = Double.parseDouble(screen);
         latestOperation = operation;
     }
@@ -72,6 +93,7 @@ public class Calculator {
      * @param operation "√" für Quadratwurzel, "%" für Prozent, "1/x" für Inversion
      */
     public void pressUnaryOperationKey(String operation) {
+        lastPressClear = false;
         latestValue = Double.parseDouble(screen);
         latestOperation = operation;
         var result = switch(operation) {
@@ -94,6 +116,7 @@ public class Calculator {
      * Beim zweimaligem Drücken, oder wenn bereits ein Trennzeichen angezeigt wird, passiert nichts.
      */
     public void pressDotKey() {
+        lastPressClear = false;
         if(!screen.contains(".")) screen = screen + ".";
     }
 
@@ -105,6 +128,7 @@ public class Calculator {
      * entfernt und der Inhalt fortan als positiv interpretiert.
      */
     public void pressNegativeKey() {
+        lastPressClear = false;
         screen = screen.startsWith("-") ? screen.substring(1) : "-" + screen;
     }
 
@@ -118,6 +142,7 @@ public class Calculator {
      * und das Ergebnis direkt angezeigt.
      */
     public void pressEqualsKey() {
+        lastPressClear = false;
         var result = switch(latestOperation) {
             case "+" -> latestValue + Double.parseDouble(screen);
             case "-" -> latestValue - Double.parseDouble(screen);
